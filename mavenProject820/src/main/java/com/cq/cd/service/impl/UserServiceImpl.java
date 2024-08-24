@@ -28,7 +28,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         //user对象为空，直接输出账号错误；否则进一步验证密码
         if(user!=null){
             //getUserPassword得到的密码是加密后的结果；进行验证:调用verify函数
-            String userpwd=user.getUserPassword();
+            String userpwd=user.getUserpassword();
             if(Md5.verify(Md5.Wukong,password,userpwd)){
                 return "success";
             }else{
@@ -40,12 +40,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     public String securityLogin(String username, String answer) {
         //先由wrapper判断传入的userName是否由与数据库匹配的(selectOne)
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("uname", username);
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
         User user=userMapper.selectOne(wrapper);
         //user对象为空，直接输出账号错误；否则进一步验证密码
         if(user!=null){
             //getSecurityAnswer得到的答案是加密后的结果；进行验证:调用verify函数
-            String userans=user.getSecurityAnswer();
+            String userans=user.getSecurityanswer();
             if(Md5.verify(Md5.Wukong,answer,userans)){
                 return "success";
             }else{
@@ -56,7 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
     //将安全验证问题返回显示的函数
     public String showSecurityAns(User user){
-        return user.getSecurityAnswer();
+        return user.getSecurityanswer();
     }
 
     public String loginbyemail(String email,String password) {
@@ -64,7 +64,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         User user=userMapper.selectOne(wrapper);
 
         if(user!=null){
-            String userpwd=user.getUserPassword();
+            String userpwd=user.getUserpassword();
             if(Md5.verify(Md5.Wukong,password,userpwd)){
                 return "success";
             }else{
@@ -75,18 +75,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     public String registerService(User user,String uname,String password) {
-        user.setUserName(uname);
+        user.setUsername(uname);
         //用工具类的md5进行加密
-        user.setUserPassword(Md5.md5(Md5.Wukong,password));
+        user.setUserpassword(Md5.md5(Md5.Wukong,password));
         QueryWrapper<User> wrapper = new QueryWrapper<User>()
-                .eq("uname",user.getUserName());
+                .eq("uname",user.getUsername());
         User userE=userMapper.selectOne(wrapper);
         String Nonepwd=Md5.md5(Md5.Wukong,"");
         if(userE==null){
-            if(Nonepwd.equals(user.getUserPassword())){
+            if(Nonepwd.equals(user.getUserpassword())){
                 return "密码为空";
             }
-            else if("".equals(user.getUserName())){
+            else if("".equals(user.getUsername())){
                 return "用户名为空";
             }
             else{
@@ -97,8 +97,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return "此用户已经被注册";
     }
     public String updateProfile(User user){
-        //总共实现密码修改，头像Url，个人简介，安全问题以及安全问题答案的更新
-        int update = userMapper.update(user,new QueryWrapper<User>().eq("uname",user.getUserName()));
+        //头像Url，个人简介，安全问题的更新
+        user.setAvatarurl(user.getAvatarurl());
+        user.setBio(user.getBio());
+        user.setSecurityquestion(user.getSecurityquestion());
+        int update = userMapper.update(user,new QueryWrapper<User>().eq("username",user.getUsername()));
         if(update>0){
             return "success";
         }else return "更新失败";

@@ -65,13 +65,13 @@ public class MailService {
             if (email==null){
                 return "邮箱地址为空，请重新注册";
             }
-            else if("".equals(user.getUserPassword())){
+            else if("".equals(user.getUserpassword())){
                 return "密码为空";
             }
             else if(!code.equals(voCode)){
                 return "验证码错误，请确认后重新注册";
             }else{
-                user.setUserPassword(Md5.md5(Md5.Wukong,user.getUserPassword()));
+                user.setUserpassword(Md5.md5(Md5.Wukong,user.getUserpassword()));
                 //将数据写入数据库
                 userMapper.insert(user);
                 return "success";

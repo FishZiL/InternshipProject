@@ -8,9 +8,9 @@ public class UserVoToUser {
      */
     public static User toUser(UserVo userVo) {
         User user = new User();
-        user.setUserName(userVo.getUsername());
-        user.setUserPassword(userVo.getPassword());
-        user.setUserEmail(userVo.getEmail());
+        user.setUsername(userVo.getUsername());
+        user.setUserpassword(userVo.getPassword());
+        user.setUseremail(userVo.getEmail());
         return user;
     }
 }

@@ -9,17 +9,17 @@ public class User {
 
     private long uid;
     @TableField(value = "username")
-    private String userName;
-    @TableField(value = "passwordHash")
-    private String userPassword;
+    private String username;
+    @TableField(value = "passwordhash")
+    private String userpassword;
     @TableField(value = "email")
-    private String userEmail;
+    private String useremail;
 
-    private String securityQuestion;
+    private String securityquestion;
     //数据库中只存储安全问题答案的MD5加密方式
-    @TableField(value = "securityAnswerHash")
-    private String securityAnswer;
-    private String avatarUrl;
+    @TableField(value = "securityanswerhash")
+    private String securityanswer;
+    private String avatarurl;
     private String bio;
 
 

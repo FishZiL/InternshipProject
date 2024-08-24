@@ -1,25 +1,22 @@
 package com.cq.cd.controller;
-
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.cq.cd.mapper.UserMapper;
 import com.cq.cd.pojo.User;
 import com.cq.cd.service.MailService;
 import com.cq.cd.service.UserService;
+import com.cq.cd.util.Md5;
 import com.cq.cd.util.Result;
 import com.cq.cd.util.ResultUtil;
-
 import com.cq.cd.vo.UserVo;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.servlet.ServletConfig;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 
 @RestController
@@ -28,14 +25,14 @@ public class UserController {
     @Autowired
     public UserService userService;
 
-    @Resource
-    private JavaMailSender javaMailSender;
-
     @Value("${spring.mail.username}")
     private String from;
 
     @Autowired
     private MailService mailService;
+    @Autowired
+    private UserMapper userMapper;
+
     //测试是否正常运行的hello
     @RequestMapping("/hello")
     public String hello() {
@@ -45,8 +42,8 @@ public class UserController {
 
     //普通账号密码登录
     @RequestMapping("/login")
-    public Result login(@RequestParam String uname,@RequestParam String password){
-        String msg = userService.loginService(uname, password);
+    public Result login(@RequestParam(value = "username") String username,@RequestParam String password){
+        String msg = userService.loginService(username, password);
         if(msg == "success"){
             return ResultUtil.success("登录成功");
         }
@@ -54,7 +51,7 @@ public class UserController {
     }
     //通过安全问题验证登录
     @RequestMapping("/login/security")
-    public Result secLogin(@RequestParam String uname,@RequestParam String securityAnswer){
+    public Result secLogin(@RequestParam(value = "username") String uname,@RequestParam(value = "ans") String securityAnswer){
         String msg = userService.securityLogin(uname, securityAnswer);
         if(msg == "success"){
             return ResultUtil.success("登录成功");
@@ -102,12 +99,56 @@ public class UserController {
         }
         return ResultUtil.error(RegistRes);
     }
+    //
     @RequestMapping("/1/update")
-    public Result update(@RequestParam User user){
+    //头像Url，个人简介，安全问题的更新
+    public Result update(User user){
         String Update=userService.updateProfile(user);
         if(Update=="success"){
             return ResultUtil.success("更新个人信息成功");
         }
         return ResultUtil.error(Update);
+    }
+    //更新密码
+    @RequestMapping("/2/update")
+    public Result updatepassword(@RequestParam(value = "username") String username,@RequestParam(value = "new") String newpassword,@RequestParam(value = "old") String oldpassword){
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
+        User user=userMapper.selectOne(wrapper);
+        if(Md5.verify(Md5.Wukong,oldpassword,user.getUserpassword())){
+            String passwordHash=Md5.md5(Md5.Wukong,newpassword);
+            UpdateWrapper<User> wrapperup = new UpdateWrapper<User>()
+                    .eq("username",username);
+            user.setUserpassword(passwordHash);
+            userMapper.update(user,wrapperup);
+            return ResultUtil.success("更新密码成功！");
+        }
+        return ResultUtil.error("用户密码错误，无法更新密码");
+    }
+    //更新安全问题答案，使用用户密码进行更新
+    @RequestMapping("/3/update")
+    public Result updateans(@RequestParam(value = "username") String username,@RequestParam(value = "new") String newans,@RequestParam(value = "pass") String password){
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
+        User user=userMapper.selectOne(wrapper);
+        if(Md5.verify(Md5.Wukong,password,user.getUserpassword())){
+            String ansHash=Md5.md5(Md5.Wukong,newans);
+            UpdateWrapper<User> wrapperup = new UpdateWrapper<User>()
+                    .eq("username",username);
+            user.setSecurityanswer(ansHash);
+            userMapper.update(user,wrapperup);
+            return ResultUtil.success("更新安全问题答案成功！");
+        }
+        return ResultUtil.error("密码错误，无法更新安全问题答案");
+    }
+    //用户搜索
+    @RequestMapping("/search")
+    public ArrayList search(@RequestParam(value = "username") String username){
+        ArrayList list=new ArrayList();
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
+        User user=userMapper.selectOne(wrapper);
+        list.add("用户编号："+user.getUid());
+        list.add("用户昵称:"+user.getUsername());
+        list.add("用户的邮箱地址:"+user.getUseremail());
+        list.add("用户简介:"+user.getBio());
+        return list;
     }
 }

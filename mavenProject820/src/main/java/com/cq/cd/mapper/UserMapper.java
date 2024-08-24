@@ -8,6 +8,6 @@ import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface UserMapper extends BaseMapper<User> {
-    void updateByAge(@Param("ew")UpdateWrapper<User> wrapper,@Param("minusAge") int minusAge);
+    void updatePassword(@Param("ew")UpdateWrapper<User> wrapper,@Param("password") String password);
 }
 
