@@ -6,28 +6,29 @@ spring:
     username: root
     password: cp731950LZY
   mail:
-  host: smtp.qq.com
-  username: "2889983928@qq.com"
-  password: "gblespuokifqdgbb"
-  default-encoding: UTF-8
-  protocol: smtp
-  port: 465
-  properties:
-    mail:
-      smtp:
-        auth: true
-        socketFactory:
-          class: javax.net.ssl.SSLSocketFactory
-          port: 465
-        ssl:
-          enable: true
-        starttls:
-          enable: true
-          required: true
-
+    host: smtp.qq.com
+    username: "2889983928@qq.com"
+    password: "gblespuokifqdgbb"
+    default-encoding: UTF-8
+    protocol: smtp
+    port: 465
+    properties:
+      mail:
+        smtp:
+          auth: true
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+            port: 465
+          ssl:
+            enable: true
+          starttls:
+            enable: true
+            required: true
 server:
   port: 8088
-#mybatis-plus:
-#  global-config:
-#    db-config:
-#      update-strategy: not_null
+mybatis-plus:
+  global-config:
+    db-config:
+      update-strategy: not_null
+
+
