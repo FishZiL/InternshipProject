@@ -46,10 +46,11 @@ public class UserController {
         }
         return ResultUtil.error(msg);
     }
+    //邮箱注册需要验证码
     @RequestMapping("/registerByemail")
     public Result registerbyemail(@RequestParam String uemail,@RequestParam String password){
         User user = new User();
-        String msg = userService.registerService(user,uemail,password);
+        String msg = userService.registerByEmail(user,uemail,password);
         if(msg == "success"){
             return ResultUtil.success("邮箱地址注册成功");
         }
