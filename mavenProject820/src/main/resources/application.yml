@@ -27,7 +27,7 @@ spring:
 
 server:
   port: 8088
-mybatis-plus:
-  global-config:
-    db-config:
-      update-strategy: not_null
+#mybatis-plus:
+#  global-config:
+#    db-config:
+#      update-strategy: not_null
