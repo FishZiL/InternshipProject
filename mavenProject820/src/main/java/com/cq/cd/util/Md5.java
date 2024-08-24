@@ -1,5 +1,4 @@
 package com.cq.cd.util;
-
 import org.apache.commons.codec.digest.DigestUtils;
 
 public class Md5 {

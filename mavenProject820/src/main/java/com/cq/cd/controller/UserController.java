@@ -151,4 +151,14 @@ public class UserController {
         list.add("用户简介:"+user.getBio());
         return list;
     }
+    //注销用户：删除用户在数据库中的所有数据
+    @RequestMapping("/delete")
+    public Result delete(@RequestParam(value = "username") String username){
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
+        int col=userMapper.delete(wrapper);
+        if(col>0){
+            return ResultUtil.success("删除成功");
+        }
+        return  ResultUtil.error("删除失败");
+    }
 }

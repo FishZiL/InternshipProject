@@ -23,7 +23,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
 
     public String loginService(String username, String password) {
         //先由wrapper判断传入的userName是否由与数据库匹配的(selectOne)
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("uname", username);
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
         User user=userMapper.selectOne(wrapper);
         //user对象为空，直接输出账号错误；否则进一步验证密码
         if(user!=null){
@@ -60,7 +60,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     public String loginbyemail(String email,String password) {
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("uemail", email);
+        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email", email);
         User user=userMapper.selectOne(wrapper);
 
         if(user!=null){
@@ -79,7 +79,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         //用工具类的md5进行加密
         user.setUserpassword(Md5.md5(Md5.Wukong,password));
         QueryWrapper<User> wrapper = new QueryWrapper<User>()
-                .eq("uname",user.getUsername());
+                .eq("username",user.getUsername());
         User userE=userMapper.selectOne(wrapper);
         String Nonepwd=Md5.md5(Md5.Wukong,"");
         if(userE==null){

@@ -57,7 +57,7 @@ public class MailService {
         User user = UserVoToUser.toUser(userVo);
         //用wrapper筛选出是否该邮箱的信息
         QueryWrapper<User> wrapper = new QueryWrapper<User>()
-                .eq("uemail",email);
+                .eq("email",email);
         User userE=userMapper.selectOne(wrapper);
         //确认该邮箱地址是否有注册过
         if(userE==null){
