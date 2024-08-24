@@ -31,5 +31,3 @@ mybatis-plus:
   global-config:
     db-config:
       update-strategy: not_null
-
-
