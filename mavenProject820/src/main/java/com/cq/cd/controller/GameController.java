@@ -23,4 +23,12 @@ public class GameController {
         }
         return ResultUtil.error(msg);
     }
+    @RequestMapping("/update")
+    public Result updateGame(Game game){
+        String msg=gameService.updateInfo(game);
+        if(msg=="success"){
+            return ResultUtil.success("更新游戏信息成功");
+        }
+        return ResultUtil.error(msg);
+    }
 }

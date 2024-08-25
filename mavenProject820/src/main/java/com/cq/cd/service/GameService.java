@@ -2,8 +2,9 @@ package com.cq.cd.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.cq.cd.pojo.Game;
+import com.cq.cd.pojo.game.platforms;
 
 public interface GameService extends IService<Game> {
     public String CreateGame(Game game);
-    public String platformInfo();
+    public String updateInfo(Game game);
 }
