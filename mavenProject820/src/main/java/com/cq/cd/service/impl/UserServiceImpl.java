@@ -59,6 +59,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return user.getSecurityanswer();
     }
 
+    //通过邮箱进行登录
     public String loginbyemail(String email,String password) {
         QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email", email);
         User user=userMapper.selectOne(wrapper);
