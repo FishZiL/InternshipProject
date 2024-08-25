@@ -11,5 +11,4 @@ public class Game {
     private String developer;
     private String publisher;
     private String releasedate;
-
 }
