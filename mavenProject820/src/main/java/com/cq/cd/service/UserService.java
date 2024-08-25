@@ -1,6 +1,7 @@
 package com.cq.cd.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.cq.cd.pojo.Game;
 import com.cq.cd.pojo.User;
 
 public interface UserService extends IService<User> {

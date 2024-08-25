@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cq.cd.controller.UserController;
 import com.cq.cd.mapper.UserMapper;
 
+import com.cq.cd.pojo.Game;
 import com.cq.cd.pojo.User;
 import com.cq.cd.service.UserService;
 import com.cq.cd.util.Md5;
@@ -107,6 +108,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
             return "success";
         }else return "更新失败";
     }
+
     //返回随机的六位验证码
     public String generateRandomCode(){
         // 字母和数字组合
@@ -121,4 +123,5 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         }
         return builder.toString();
     }
+
 }

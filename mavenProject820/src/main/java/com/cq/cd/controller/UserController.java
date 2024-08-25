@@ -41,7 +41,7 @@ public class UserController {
 
 
     //普通账号密码登录
-    @RequestMapping("/login")
+    @RequestMapping("/1/login")
     public Result login(@RequestParam(value = "username") String username,@RequestParam String password){
         String msg = userService.loginService(username, password);
         if(msg == "success"){
@@ -50,7 +50,7 @@ public class UserController {
         return ResultUtil.error(msg);
     }
     //通过安全问题验证登录
-    @RequestMapping("/login/security")
+    @RequestMapping("/2/login")
     public Result secLogin(@RequestParam(value = "username") String uname,@RequestParam(value = "ans") String securityAnswer){
         String msg = userService.securityLogin(uname, securityAnswer);
         if(msg == "success"){
@@ -59,7 +59,7 @@ public class UserController {
         return ResultUtil.error(msg);
     }
     //通过邮箱进行登录
-    @RequestMapping("/loginByEmail")
+    @RequestMapping("/3/login")
     public Result registerByEmail(@RequestParam String uemail,@RequestParam String password){
         User user = new User();
         String msg = userService.loginbyemail(uemail,password);
@@ -71,7 +71,7 @@ public class UserController {
 
 
     //进行用户名和密码的注册
-    @RequestMapping("/register")
+    @RequestMapping("/1/register")
     public Result register(@RequestParam String uname,@RequestParam String password){
         User user = new User();
         String msg = userService.registerService(user,uname,password);
@@ -91,7 +91,7 @@ public class UserController {
         return ResultUtil.error("发送邮箱失败");
     }
     //邮箱注册需要验证码
-    @RequestMapping("/registByemail")
+    @RequestMapping("/2/regist")
     public Result registerbyemail(UserVo userVo, HttpSession session){
         String RegistRes=mailService.registered(userVo,session);
         if(RegistRes=="success"){
@@ -161,4 +161,6 @@ public class UserController {
         }
         return  ResultUtil.error("删除失败");
     }
+
+
 }
