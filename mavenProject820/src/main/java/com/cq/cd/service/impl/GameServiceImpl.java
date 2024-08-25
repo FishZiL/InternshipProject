@@ -39,6 +39,7 @@ public class GameServiceImpl extends ServiceImpl<GameMapper, Game> implements Ga
                 return "success";
             }
         }
+
         return "此游戏已经发布，无需再次创建";
     }
     //修改游戏相关信息，包括游戏描述、开发者、发行商、发布日期、平台信息等

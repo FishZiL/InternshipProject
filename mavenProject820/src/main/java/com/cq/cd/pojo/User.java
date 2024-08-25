@@ -1,13 +1,14 @@
 package com.cq.cd.pojo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 @TableName("user")
 @Data
 public class User {
-
-    private long uid;
+    @TableId(value = "userid")
+    private int uid;
     @TableField(value = "username")
     private String username;
     @TableField(value = "passwordhash")

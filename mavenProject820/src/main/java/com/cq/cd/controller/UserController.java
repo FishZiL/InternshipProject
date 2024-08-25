@@ -72,7 +72,7 @@ public class UserController {
 
     //进行用户名和密码的注册
     @RequestMapping("/1/register")
-    public Result register(@RequestParam String uname,@RequestParam String password){
+    public Result register(@RequestParam (value = "name")String uname,@RequestParam (value = "password")String password){
         User user = new User();
         String msg = userService.registerService(user,uname,password);
         if(msg == "success"){

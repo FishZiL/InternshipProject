@@ -8,9 +8,8 @@ public class Community {
     private int communityid;
     private String name;
     private String description;
-    private String guideline;
+    private String guidelines;
     private int categoryid;
     private String gameid;
     private int createdby;
-    private Date createat;
 }
