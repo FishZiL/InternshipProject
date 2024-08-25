@@ -31,4 +31,12 @@ public class GameController {
         }
         return ResultUtil.error(msg);
     }
+    @RequestMapping("/delete")
+    public Result deleteGame(Game game){
+        String msg=gameService.deleteGame(game);
+        if(msg=="success"){
+            return ResultUtil.success("删除游戏成功");
+        }
+        return ResultUtil.error(msg);
+    }
 }
