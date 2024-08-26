@@ -18,8 +18,8 @@ public class JwtUtil {
 
     public static String generateToken(String userId) {
         HashMap<String, Object> map = new HashMap<>();
-        //you can put any data in the map
         map.put(USER_NAME, userId);
+        //通过传入的用户名和常量USER_NAME进行加密操作，return的Jwt就是所需要的Token
         String jwt = Jwts.builder()
                 .setClaims(map)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
@@ -33,6 +33,8 @@ public class JwtUtil {
         if (token != null) {
             // parse the token.
             try {
+                //将token进行解密，将前端中Bearer+token 中Bearer替换为空格
+                // 以解密得到map对象，进而得到map中存储的userId用户名
                 Map<String, Object> body = Jwts.parser()
                         .setSigningKey(SECRET)
                         .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
@@ -49,7 +51,7 @@ public class JwtUtil {
 
     public static class CustomHttpServletRequest extends HttpServletRequestWrapper {
         private Map<String, String> claims;
-
+        //将解析出来的map遍历取出其中键值对存储在Map claims中
         public CustomHttpServletRequest(HttpServletRequest request, Map<String, ?> claims) {
             super(request);
             this.claims = new HashMap<>();

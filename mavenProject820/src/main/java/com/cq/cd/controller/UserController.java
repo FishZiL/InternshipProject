@@ -1,6 +1,8 @@
 package com.cq.cd.controller;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.cq.cd.login.UserLogin;
 import com.cq.cd.mapper.UserMapper;
 import com.cq.cd.pojo.User;
 import com.cq.cd.service.MailService;
@@ -12,11 +14,15 @@ import com.cq.cd.vo.UserVo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.ObjectUtils;
+import org.springframework.web.bind.annotation.*;
+
 import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.cq.cd.jwt.JwtUtil.USER_NAME;
 
 
 @RestController
@@ -39,15 +45,26 @@ public class UserController {
         return "Welcome to Our GameShare";
     }
 
-
+    //controller通过@RequestHeader来得到USER_NAME中存储的userId用户名
+    //在重写的getheader方法中得到存储到claims中的username并将值传递给userName
+    @RequestMapping(value = "/info",method = RequestMethod.GET)
+    public Result getUserInfo(@RequestHeader(value = USER_NAME) String userName) {
+        User user = userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, userName));
+        if (user == null) {
+            return ResultUtil.error("获取用户信息失败");
+        }
+        return ResultUtil.success("成功获取用户信息");
+    }
     //普通账号密码登录
     @RequestMapping("/1/login")
-    public Result login(@RequestParam(value = "username") String username,@RequestParam String password){
-        String msg = userService.loginService(username, password);
-        if(msg == "success"){
-            return ResultUtil.success("登录成功");
+    public Result login(UserLogin userlogin){
+        String token = userService.loginService(userlogin);
+        if(ObjectUtils.isEmpty(token)){
+            return ResultUtil.error("账号密码错误");
         }
-        return ResultUtil.error(msg);
+        Map<String,String> map = new HashMap<>(16);
+        map.put("token",token);
+        return ResultUtil.success("登录成功");
     }
     //通过安全问题验证登录
     @RequestMapping("/2/login")

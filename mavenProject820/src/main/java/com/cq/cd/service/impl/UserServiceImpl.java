@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cq.cd.controller.UserController;
+import com.cq.cd.jwt.JwtUtil;
+import com.cq.cd.login.UserLogin;
 import com.cq.cd.mapper.UserMapper;
 
-import com.cq.cd.pojo.Game;
 import com.cq.cd.pojo.User;
 import com.cq.cd.service.UserService;
 import com.cq.cd.util.Md5;
-import com.cq.cd.util.Updatefiles;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Service;
 
 
@@ -21,22 +20,25 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements UserService {
     @Autowired
     public UserMapper userMapper;
-
-    public String loginService(String username, String password) {
+    /*
+    将username、password、ifremember后；通过userMapper的selectone选出该User
+    */
+    public String loginService(UserLogin userlogin) {
+        //初始化一个Token
+        String Token=null;
         //先由wrapper判断传入的userName是否由与数据库匹配的(selectOne)
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
-        User user=userMapper.selectOne(wrapper);
-        //user对象为空，直接输出账号错误；否则进一步验证密码
-        if(user!=null){
-            //getUserPassword得到的密码是加密后的结果；进行验证:调用verify函数
-            String userpwd=user.getUserpassword();
-            if(Md5.verify(Md5.Wukong,password,userpwd)){
-                return "success";
-            }else{
-                return "密码错误";
+        try{
+            User user=userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, userlogin.getUsername()));
+            boolean Right=Md5.verify(Md5.Wukong,userlogin.getPassword(),user.getUserpassword());
+            if(!Right){
+                throw new Exception("密码错误");
             }
+            Token= JwtUtil.generateToken(String.valueOf(user.getUsername()));
         }
-        return "账号错误";
+        catch(Exception e){
+            log.warn("用户"+userlogin.getUsername()+"不存在或者密码验证失败");
+        }
+        return Token;
     }
 
     public String securityLogin(String username, String answer) {

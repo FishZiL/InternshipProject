@@ -13,6 +13,7 @@ public class User {
     private String username;
     @TableField(value = "passwordhash")
     private String userpassword;
+    private boolean remember;
     @TableField(value = "email")
     private String useremail;
 
