@@ -1,5 +1,4 @@
 package com.cq.cd.jwt;
-
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
