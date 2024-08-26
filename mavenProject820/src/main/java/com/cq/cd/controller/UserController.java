@@ -128,7 +128,10 @@ public class UserController {
     }
     //邮箱注册需要验证码
     @RequestMapping("/2/regist")
-    public Result registerbyemail(@Valid UserVo userVo, HttpSession session){
+    public Result registerbyemail(@Valid UserVo userVo, HttpSession session,BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
         String RegistRes=mailService.registered(userVo,session);
         if(RegistRes=="success"){
             return ResultUtil.success("邮箱地址注册成功,请尽快完善您的用户信息。");
