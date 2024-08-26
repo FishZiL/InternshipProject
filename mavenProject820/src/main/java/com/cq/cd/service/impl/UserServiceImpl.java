@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.cq.cd.controller.UserController;
 import com.cq.cd.jwt.JwtUtil;
+import com.cq.cd.login.UserEmailLogin;
 import com.cq.cd.login.UserLogin;
+import com.cq.cd.login.UserQALogin;
 import com.cq.cd.mapper.UserMapper;
 
 import com.cq.cd.pojo.User;
@@ -21,7 +23,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     @Autowired
     public UserMapper userMapper;
     /*
-    将username、password、ifremember后；通过userMapper的selectone选出该User
+    将username、password后；通过userMapper的selectone选出该User
     */
     public String loginService(UserLogin userlogin) {
         //初始化一个Token
@@ -41,21 +43,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return Token;
     }
 
-    public String securityLogin(String username, String answer) {
-        //先由wrapper判断传入的userName是否由与数据库匹配的(selectOne)
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("username", username);
-        User user=userMapper.selectOne(wrapper);
-        //user对象为空，直接输出账号错误；否则进一步验证密码
-        if(user!=null){
-            //getSecurityAnswer得到的答案是加密后的结果；进行验证:调用verify函数
-            String userans=user.getSecurityanswer();
-            if(Md5.verify(Md5.Wukong,answer,userans)){
-                return "success";
-            }else{
-                return "安全问题验证失败";
+    public String securityLogin(UserQALogin userQAlogin) {
+        //与用户名和密码登录一致，都需要返回Token
+        String Token=null;
+        try {
+            User user=userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, userQAlogin.getUsername()));
+            boolean Right=Md5.verify(Md5.Wukong,userQAlogin.getSecurityanswer(),user.getSecurityanswer());
+            if(!Right){
+                throw  new Exception("安全验证问题答案错误");
             }
+            Token= JwtUtil.generateToken(String.valueOf(user.getUsername()));
         }
-        return "用户名错误";
+        catch(Exception e){
+            log.warn("用户"+userQAlogin.getUsername()+"不存在或者安全验证问题答案错误");
+        }
+        return Token;
     }
     //将安全验证问题返回显示的函数
     public String showSecurityAns(User user){
@@ -63,19 +65,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
     }
 
     //通过邮箱进行登录
-    public String loginbyemail(String email,String password) {
-        QueryWrapper<User> wrapper = new QueryWrapper<User>().eq("email", email);
-        User user=userMapper.selectOne(wrapper);
-
-        if(user!=null){
-            String userpwd=user.getUserpassword();
-            if(Md5.verify(Md5.Wukong,password,userpwd)){
-                return "success";
-            }else{
-                return "密码错误";
+    public String loginbyemail(UserEmailLogin userElogin) {
+        String Token=null;
+        try {
+            User user=userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUseremail, userElogin.getUseremail()));
+            boolean Right=Md5.verify(Md5.Wukong,userElogin.getPassword(),user.getUserpassword());
+            if(!Right){
+                throw  new Exception("密码错误");
             }
+            Token= JwtUtil.generateToken(String.valueOf(user.getUsername()));
         }
-        return "邮箱地址错误";
+        catch(Exception e){
+            log.warn("用户邮箱地址"+userElogin.getUseremail()+"不存在或者密码错误");
+        }
+        return Token;
     }
 
     public String registerService(User user,String uname,String password) {

@@ -2,7 +2,9 @@ package com.cq.cd.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.cq.cd.login.UserEmailLogin;
 import com.cq.cd.login.UserLogin;
+import com.cq.cd.login.UserQALogin;
 import com.cq.cd.mapper.UserMapper;
 import com.cq.cd.pojo.User;
 import com.cq.cd.service.MailService;
@@ -15,9 +17,11 @@ import com.cq.cd.vo.UserVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.ObjectUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -57,33 +61,45 @@ public class UserController {
     }
     //普通账号密码登录
     @RequestMapping("/1/login")
-    public Result login(UserLogin userlogin){
+    public Result login(@Valid UserLogin userlogin, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
         String token = userService.loginService(userlogin);
         if(ObjectUtils.isEmpty(token)){
-            return ResultUtil.error("账号密码错误");
+            return ResultUtil.error("用户名或密码错误");
         }
         Map<String,String> map = new HashMap<>(16);
         map.put("token",token);
-        return ResultUtil.success("登录成功");
+        return ResultUtil.success(map);
     }
     //通过安全问题验证登录
     @RequestMapping("/2/login")
-    public Result secLogin(@RequestParam(value = "username") String uname,@RequestParam(value = "ans") String securityAnswer){
-        String msg = userService.securityLogin(uname, securityAnswer);
-        if(msg == "success"){
-            return ResultUtil.success("登录成功");
+    public Result secLogin(@Valid UserQALogin userQALogin, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        return ResultUtil.error(msg);
+        String token = userService.securityLogin(userQALogin);
+        if(ObjectUtils.isEmpty(token)){
+            return ResultUtil.error("用户名或安全验证问题答案错误");
+        }
+        Map<String,String> map = new HashMap<>(16);
+        map.put("token",token);
+        return ResultUtil.success(map);
     }
     //通过邮箱进行登录
     @RequestMapping("/3/login")
-    public Result registerByEmail(@RequestParam String uemail,@RequestParam String password){
-        User user = new User();
-        String msg = userService.loginbyemail(uemail,password);
-        if(msg == "success"){
-            return ResultUtil.success("邮箱登录成功");
+    public Result LoginByEmail(@Valid UserEmailLogin userElogin, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
         }
-        return ResultUtil.error(msg);
+        String token = userService.loginbyemail(userElogin);
+        if(ObjectUtils.isEmpty(token)){
+            return ResultUtil.error("邮箱地址或密码错误");
+        }
+        Map<String,String> map = new HashMap<>(16);
+        map.put("token",token);
+        return ResultUtil.success(map);
     }
 
 
