@@ -11,6 +11,7 @@ import com.cq.cd.login.UserQALogin;
 import com.cq.cd.mapper.UserMapper;
 
 import com.cq.cd.pojo.User;
+import com.cq.cd.register.UserRegister;
 import com.cq.cd.service.UserService;
 import com.cq.cd.util.Md5;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,25 +82,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,User> implements Use
         return Token;
     }
 
-    public String registerService(User user,String uname,String password) {
-        user.setUsername(uname);
-        //用工具类的md5进行加密
-        user.setUserpassword(Md5.md5(Md5.Wukong,password));
-        QueryWrapper<User> wrapper = new QueryWrapper<User>()
-                .eq("username",user.getUsername());
-        User userE=userMapper.selectOne(wrapper);
-        String Nonepwd=Md5.md5(Md5.Wukong,"");
-        if(userE==null){
-            if(Nonepwd.equals(user.getUserpassword())){
-                return "密码为空";
-            }
-            else if("".equals(user.getUsername())){
-                return "用户名为空";
-            }
-            else{
+    public String registerService(UserRegister newUser) {
+        User user=userMapper.selectOne(new LambdaQueryWrapper<User>().eq(User::getUsername, newUser.getUsername()));
+        if(user==null){
+            if(newUser.getCheckpassword().equals(newUser.getPassword())){
+                user=new User();
+                user.setUsername(newUser.getUsername());
+                //用工具类的md5进行加密
+                user.setUserpassword(Md5.md5(Md5.Wukong,newUser.getPassword()));
                 userMapper.insert(user);
                 return "success";
             }
+            return "请确保再次输入的密码与首次输入的一致";
         }
         return "此用户已经被注册";
     }

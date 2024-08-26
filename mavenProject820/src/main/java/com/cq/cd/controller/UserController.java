@@ -7,6 +7,7 @@ import com.cq.cd.login.UserLogin;
 import com.cq.cd.login.UserQALogin;
 import com.cq.cd.mapper.UserMapper;
 import com.cq.cd.pojo.User;
+import com.cq.cd.register.UserRegister;
 import com.cq.cd.service.MailService;
 import com.cq.cd.service.UserService;
 import com.cq.cd.util.Md5;
@@ -59,7 +60,7 @@ public class UserController {
         }
         return ResultUtil.success("成功获取用户信息");
     }
-    //普通账号密码登录
+    //普通用户名密码登录
     @RequestMapping("/1/login")
     public Result login(@Valid UserLogin userlogin, BindingResult bindingResult){
         if (bindingResult.hasErrors()) {
@@ -67,7 +68,7 @@ public class UserController {
         }
         String token = userService.loginService(userlogin);
         if(ObjectUtils.isEmpty(token)){
-            return ResultUtil.error("用户名或密码错误");
+            return ResultUtil.error("用户名不存在/错误 或 密码错误");
         }
         Map<String,String> map = new HashMap<>(16);
         map.put("token",token);
@@ -81,7 +82,7 @@ public class UserController {
         }
         String token = userService.securityLogin(userQALogin);
         if(ObjectUtils.isEmpty(token)){
-            return ResultUtil.error("用户名或安全验证问题答案错误");
+            return ResultUtil.error("用户名不存在/错误 或 安全验证问题答案不存在/错误");
         }
         Map<String,String> map = new HashMap<>(16);
         map.put("token",token);
@@ -95,7 +96,7 @@ public class UserController {
         }
         String token = userService.loginbyemail(userElogin);
         if(ObjectUtils.isEmpty(token)){
-            return ResultUtil.error("邮箱地址或密码错误");
+            return ResultUtil.error("邮箱地址不存在/错误 或 密码错误");
         }
         Map<String,String> map = new HashMap<>(16);
         map.put("token",token);
@@ -105,17 +106,19 @@ public class UserController {
 
     //进行用户名和密码的注册
     @RequestMapping("/1/register")
-    public Result register(@RequestParam (value = "name")String uname,@RequestParam (value = "password")String password){
-        User user = new User();
-        String msg = userService.registerService(user,uname,password);
-        if(msg == "success"){
-            return ResultUtil.success("注册成功");
+    public Result register(@Valid UserRegister newUser, BindingResult bindingResult){
+        if (bindingResult.hasErrors()) {
+            return ResultUtil.error(bindingResult.getAllErrors().get(0).getDefaultMessage());
+        }
+        String msg = userService.registerService(newUser);
+        if(msg.equals("success")){
+            return ResultUtil.success("注册成功,请尽快完善您的用户信息。");
         }
         return ResultUtil.error(msg);
     }
 
     //发送邮箱的验证码，验证码只能使用一次，错误需要重新发送
-    @RequestMapping("/sendEmail")
+    @RequestMapping("/2/regist/sendEmail")
     public Result sendEmail(@RequestParam(value = "email")String email, HttpSession session){
         boolean SendRes=mailService.sendMimeMail(email, session);
         if(SendRes){
@@ -125,10 +128,10 @@ public class UserController {
     }
     //邮箱注册需要验证码
     @RequestMapping("/2/regist")
-    public Result registerbyemail(UserVo userVo, HttpSession session){
+    public Result registerbyemail(@Valid UserVo userVo, HttpSession session){
         String RegistRes=mailService.registered(userVo,session);
         if(RegistRes=="success"){
-            return ResultUtil.success("邮箱地址注册成功");
+            return ResultUtil.success("邮箱地址注册成功,请尽快完善您的用户信息。");
         }
         return ResultUtil.error(RegistRes);
     }
