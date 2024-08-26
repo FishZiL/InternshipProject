@@ -53,17 +53,12 @@ public class PostsController {
     }
 
     @RequestMapping("/search2")
-    public List<Posts> search2(String title) {
+    public Posts search2(String title) {
 
-        List<Posts> postslist = new ArrayList<>();
         QueryWrapper<Posts> wrapper = new QueryWrapper<Posts>().eq("title", title);
         Posts posts = postsMapper.selectOne(wrapper);
-
-        if (posts == null) {
+        if(posts==null){
             return null;
-        } else {
-            postslist.add(posts);
-            return postslist;
+        }else return posts;
         }
     }
-}
