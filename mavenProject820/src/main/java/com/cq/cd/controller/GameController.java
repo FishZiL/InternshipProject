@@ -48,15 +48,12 @@ public class GameController {
     }
 
     @RequestMapping("/search")
-    public ArrayList search(@RequestParam(value = "title") String title){
-        ArrayList list = new ArrayList();
+    public Game search(@RequestParam(value = "title") String title){
         QueryWrapper<Game> wrapper = new QueryWrapper<Game>().eq("title",title) ;
         Game game =gameMapper.selectOne(wrapper);
-        list.add("游戏编号:"+game.getGameid());
-        list.add("游戏名:"+game.getTitle());
-        list.add("描述:"+game.getDescription());
-        list.add("开发者"+game.getDeveloper());
-        list.add("发行商:"+game.getPublisher());
-        return list;
+        if(game==null){
+            return null;
+        }
+        return game;
     }
 }
