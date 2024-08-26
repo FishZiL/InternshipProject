@@ -24,7 +24,7 @@ public class PostsController {
     private PostsMapper postsMapper;
 
     @RequestMapping("/create")
-    public Result create(@RequestParam(value = "communityid") Integer communityid, @RequestParam(value = "userid") Integer authorid, @RequestParam(value = "title") String title, @RequestParam(value = "content") String content) {
+    public Result create(Integer communityid, @RequestParam(value = "userid") Integer authorid, String title, String content) {
         Posts posts = new Posts();
         String msg = postsService.CreatePosts(posts, communityid, authorid, title, content);
         if (msg == "success") {
@@ -60,5 +60,15 @@ public class PostsController {
         if(posts==null){
             return null;
         }else return posts;
-        }
     }
+
+    @RequestMapping("/delete")
+    public Result delete( String title,Integer userid){
+        QueryWrapper<Posts> wrapper = new QueryWrapper<Posts>().eq("title", title).eq("authorid", userid);
+        int col=postsMapper.delete(wrapper);
+        if(col>0){
+            return ResultUtil.success("删帖成功");
+        }
+        return  ResultUtil.error("删帖失败");
+    }
+}
