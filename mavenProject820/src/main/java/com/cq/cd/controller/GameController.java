@@ -51,6 +51,9 @@ public class GameController {
     public Game search(@RequestParam(value = "title") String title){
         QueryWrapper<Game> wrapper = new QueryWrapper<Game>().eq("title",title) ;
         Game game =gameMapper.selectOne(wrapper);
+        if(game==null){
+            return null;
+        }
         return game;
     }
 }
