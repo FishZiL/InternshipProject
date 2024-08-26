@@ -7,6 +7,7 @@ import com.cq.cd.mapper.PostsMapper;
 import com.cq.cd.mapper.UserMapper;
 import com.cq.cd.pojo.Community;
 import com.cq.cd.pojo.Posts;
+import com.cq.cd.pojo.User;
 import com.cq.cd.service.PostsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,10 +22,12 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
     @Autowired
     public UserMapper userMapper;
 
-    public String CreatePosts(Posts posts,Integer communityid,Integer authorid ,String title,String content){
+    public String CreatePosts(Posts posts,Integer communityid,String username ,String title,String content){
         //社区是否存在
         QueryWrapper<Community> wrapperU = new QueryWrapper<Community>().eq("communityid",communityid);
         Community communityE=commuinityMapper.selectOne(wrapperU);
+        QueryWrapper<User> wrapperuser = new QueryWrapper<User>().eq("username",username);
+        User userE = userMapper.selectOne(wrapperuser);
         if(communityE == null){
             return "社区不存在";
         }
@@ -32,7 +35,7 @@ public class PostsServiceImpl extends ServiceImpl<PostsMapper, Posts> implements
         posts.setTitle(title);
         posts.setContent(content);
         posts.setCommunityid(communityid);
-        posts.setAuthorid(authorid);
+        posts.setAuthorid(userE.getUid());
 
         QueryWrapper<Posts> wrapper = new QueryWrapper<Posts>().eq("title",posts.getTitle());
         Posts postsE=postsMapper.selectOne(wrapper);

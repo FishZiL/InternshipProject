@@ -45,7 +45,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         protectedPaths.add("/relationship/subscribe/*");
         protectedPaths.add("/relationship/unsubscribe/*");
         protectedPaths.add("/relationship/validate/*");
-
+        protectedPaths.add("/communities/join");
         boolean bFind = false;
         for( String passedPath : protectedPaths ) {
             bFind = pathMatcher.match(passedPath, request.getServletPath());

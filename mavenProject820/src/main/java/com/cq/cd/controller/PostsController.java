@@ -8,13 +8,14 @@ import com.cq.cd.service.PostsService;
 import com.cq.cd.util.Result;
 import com.cq.cd.util.ResultUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import  static com.cq.cd.jwt.JwtUtil.USER_NAME;
 @RestController
 @RequestMapping("/posts")
 public class PostsController {
@@ -24,9 +25,9 @@ public class PostsController {
     private PostsMapper postsMapper;
 
     @RequestMapping("/create")
-    public Result create(Integer communityid, @RequestParam(value = "userid") Integer authorid, String title, String content) {
+    public Result create(Integer communityid, @RequestHeader(value = USER_NAME) String username, String title, String content) {
         Posts posts = new Posts();
-        String msg = postsService.CreatePosts(posts, communityid, authorid, title, content);
+        String msg = postsService.CreatePosts(posts, communityid, username, title, content);
         if (msg == "success") {
             return ResultUtil.success("发帖成功");
         } else {
